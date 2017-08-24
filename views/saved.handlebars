@@ -1,0 +1,36 @@
+
+ 
+
+
+
+<div class="container">
+  <div class="row">
+
+    <div class="col s12 " id="articles">
+     
+        {{#each articles}}
+          {{#if this.saved}}
+            
+            <div class="col s4">
+              <div class="card">
+                <div class="card-image">
+                  <img src="{{this.pic}}">
+                  <span class="card-title">{{this.title}}</span>
+                  
+                </div>
+                <div class="card-content">
+                  <p>{{this.con}}</p>
+                </div>
+              </div>
+            </div>
+         
+            
+            
+          {{/if}}
+        {{/each}}
+     
+    </div>
+    
+  </div>      
+</div>
+
