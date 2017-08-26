@@ -11,7 +11,7 @@ var bodyParser = require("body-parser");
 
 // Create all our routes and set up logic within those routes where required.
 router.get("/", function(req, res) {
-    Article.find({}, function(err,data){
+    Article.find({},function(err,data){
     console.log("This is the query of data")
     console.log("=======================================")
     var hbsObject = {
@@ -22,9 +22,11 @@ router.get("/", function(req, res) {
 });
 
 router.get("/saved", function(req, res) {
-    Article.find({}, function(err,data){
+
+    Article.find({}).populate("note").exec(function(err,data){
     console.log("This is the query of Article data")
     console.log("=======================================")
+
     var hbsObject = {
           articles: data
     };
@@ -34,6 +36,7 @@ router.get("/saved", function(req, res) {
 });
 
 
+// scrape site data
 router.get("/scrape", function(req, res) {
   console.log("scrape")
   request("http://www.travelandleisure.com/travel-guide", function(error, response, html) {
@@ -83,14 +86,14 @@ router.get("/scrape", function(req, res) {
     });
   });
  
-  Article.find({}, function(err,data){
-    console.log("This is the query of data")
-    console.log("=======================================")
-    var hbsObject = {
-          articles: data
-    };
-    res.render("index", hbsObject);
-  })
+  // Article.find({}, function(err,data){
+  //   console.log("This is the query of data")
+  //   console.log("=======================================")
+  //   var hbsObject = {
+  //         articles: doc
+  //   };
+  //   res.render("index", hbsObject);
+  // })
   
   // Tell the browser that we finished scraping the text
 
@@ -114,6 +117,24 @@ router.put("/api/add/:id", function(req, res) {
   })
 });
 
+// removing card from saved list
+router.put("/api/remove/:id", function(req, res) {
+ 
+  Article.update({
+      _id: req.params.id
+    }, 
+    {
+      $set:{
+        saved: false,
+        note:[]
+      }
+  }).then(function(){
+     res.redirect("/saved");
+     console.log("put success")
+  })
+});
+
+
 // Adding Note
 
 router.post("/api/add/note/:id", function(req, res) {
@@ -126,13 +147,14 @@ router.post("/api/add/note/:id", function(req, res) {
   newNote.save(function(error, doc) {
     
     if (error) {
-      res.send(error);
+       res.redirect("/saved");
     }
     else {
       Article.findOneAndUpdate({_id: req.params.id}, { $push: { "note": doc._id } }, { new: true }, function(err, newdoc) {
         // Send any errors to the browser
         if (err) {
           res.send(err);
+
         }
         // Or send the newdoc to the browser
         else {
@@ -141,20 +163,22 @@ router.post("/api/add/note/:id", function(req, res) {
       });
     }
   });
+});
+
+
+router.get("/api/delete/scrape", function(req, res) {
+ 
+  Article.remove({ saved: false }, function (err) {
+  if (err) return handleError(err);
+  // removed!
+  });
+  res.redirect("/");
  
 });
 
-// DELETE ENTRY
-  router.delete("/:id", function(req, res) {
-    db.burgers.destroy({
-      where: {
-        id: req.params.id
-      }
-    })
-    .then(function() {
-      res.redirect("/");
-    });
-  });
+
+
+
 
 // Export routes for server.js to use.
 module.exports = router;
