@@ -167,6 +167,18 @@ router.get("/api/delete/scrape", function(req, res) {
  
 });
 
+//delete note
+
+router.get("/api/delete/note/:id", function(req, res) {
+ 
+  Note.remove({ _id: req.params.id }, function (err) {
+  if (err) return handleError(err);
+  // removed!
+  });
+  res.redirect("/saved");
+ 
+});
+
 
 
 
