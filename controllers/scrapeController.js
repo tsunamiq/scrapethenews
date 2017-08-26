@@ -84,7 +84,10 @@ router.get("/scrape", function(req, res) {
       }
 
     });
-  });
+  }).then(function(){
+    res.redirect("/")
+
+  })
  
   // Article.find({}, function(err,data){
   //   console.log("This is the query of data")
