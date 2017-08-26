@@ -36,7 +36,7 @@ app.use(express.static("public"));
 
 
 // Database configuration with mongoose
-mongoose.connect("mongodb://localhost/scrapethenews");
+mongoose.connect("mongodb://heroku_gbpfbwsk:16p89lc7kgreng8hmpb56n16na@ds161443.mlab.com:61443/heroku_gbpfbwsk");
 var db = mongoose.connection;
 
 // Show any mongoose errors
