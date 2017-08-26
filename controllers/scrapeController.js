@@ -1,10 +1,11 @@
 var express = require("express");
 var router = express.Router();
-// var Note = require("./models/Note.js");
+var Note = require("../models/notes.js");
 var Article = require("../models/article.js");
 //scraping tools
 var request = require("request");
 var cheerio = require("cheerio");
+var bodyParser = require("body-parser");
 
 
 
@@ -22,11 +23,12 @@ router.get("/", function(req, res) {
 
 router.get("/saved", function(req, res) {
     Article.find({}, function(err,data){
-    console.log("This is the query of data")
+    console.log("This is the query of Article data")
     console.log("=======================================")
     var hbsObject = {
           articles: data
     };
+
     res.render("saved", hbsObject);
   })
 });
@@ -95,7 +97,7 @@ router.get("/scrape", function(req, res) {
 
 });
 
-
+// Adding card to saved list
 
 router.put("/api/add/:id", function(req, res) {
  
@@ -110,6 +112,36 @@ router.put("/api/add/:id", function(req, res) {
      res.redirect("/");
      console.log("put success")
   })
+});
+
+// Adding Note
+
+router.post("/api/add/note/:id", function(req, res) {
+  console.log("Note Body:");
+  console.log(req.body);
+
+  
+  var newNote = new Note(req.body);
+  
+  newNote.save(function(error, doc) {
+    
+    if (error) {
+      res.send(error);
+    }
+    else {
+      Article.findOneAndUpdate({_id: req.params.id}, { $push: { "note": doc._id } }, { new: true }, function(err, newdoc) {
+        // Send any errors to the browser
+        if (err) {
+          res.send(err);
+        }
+        // Or send the newdoc to the browser
+        else {
+          res.redirect("/saved");
+        }
+      });
+    }
+  });
+ 
 });
 
 // DELETE ENTRY
