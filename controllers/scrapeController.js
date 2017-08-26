@@ -38,7 +38,7 @@ router.get("/saved", function(req, res) {
 
 // scrape site data
 router.get("/scrape", function(req, res) {
-  console.log("scrape")
+  console.log("scraping")
   request("http://www.travelandleisure.com/travel-guide", function(error, response, html) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(html);
@@ -84,18 +84,9 @@ router.get("/scrape", function(req, res) {
       }
 
     });
+    res.redirect("/");
+
   })
- 
-  // Article.find({}, function(err,data){
-  //   console.log("This is the query of data")
-  //   console.log("=======================================")
-  //   var hbsObject = {
-  //         articles: doc
-  //   };
-  //   res.render("index", hbsObject);
-  // })
-  
-  // Tell the browser that we finished scraping the text
 
 
 });
